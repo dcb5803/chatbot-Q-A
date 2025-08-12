@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Q&A Chatbot</title>
+</head>
+<body>
+  <h2>Q&A Chatbot</h2>
+  <textarea id="context" rows="6" cols="60" placeholder="Paste context here..."></textarea><br>
+  <input id="question" type="text" size="60" placeholder="Ask question..."><br>
+  <button onclick="askQuestion()">Get Answer</button>
+  <p><b>Answer:</b> <span id="answer"></span></p>
+
+  <script>
+    // Your Render API URL here:
+    const API_URL = "https://<your-render-service>.onrender.com/answer";
+
+    // Securely provide API key (do NOT hardcode for production)
+    const API_KEY = "mysecretapikey";
+
+    async function askQuestion() {
+      const context = document.getElementById("context").value;
+      const question = document.getElementById("question").value;
+      if (!context || !question) {
+        alert("Please enter both context and question");
+        return;
+      }
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": API_KEY
+          },
+          body: JSON.stringify({ context, question })
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          alert("Error: " + error.detail);
+          return;
+        }
+
+        const data = await response.json();
+        document.getElementById("answer").innerText = data.answer;
+      } catch (err) {
+        alert("Network error: " + err.message);
+      }
+    }
+  </script>
+</body>
+</html>
